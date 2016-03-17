@@ -1,0 +1,78 @@
+#!/bin/sh
+
+# Setup:
+  # do a chmod 700 <this file name>
+
+# To run this file:
+  # ./<this file name>
+
+# Sample Inputs:
+  # Clone url of source repo? -> 
+	# https://github.com/sf-wdi-22-23/modules-22.git
+  # Source directory (relative path *inside* source repo)? -> 
+    # w02-working-with-objects/d3-dawn-forms/
+  # Clone url of destination repo? -> 
+    # https://github.com/bgveenstra/shared_modules.git
+  # Destination directory (relative path *inside* destination repo)? -> 
+    # 01-front-end-basics/json-and-html-string/22-23
+
+echo "Standing on the shoulders of giants..."
+
+printf "\n  Clone url of source repo? -> "
+read SOURCE_REPO
+if [ "$SOURCE_REPO" = "" ] ; then
+	echo "   no source repo!"
+fi
+printf "  Source directory (relative path *inside* source repo)? -> "
+read SOURCE_DIR
+printf "  Clone url of destination repo? -> "
+read DESTINATION_REPO
+printf "  Destination directory (relative path *inside* destination repo)? -> "
+read DESTINATION_DIR
+
+echo "\nremoving old directories"
+rm -rf tmp-source tmp-destination
+
+echo "\ncloning $SOURCE_REPO into tmp-source"
+git clone $SOURCE_REPO tmp-source
+cd tmp-source
+git remote rm origin
+sleep 2s
+
+if [ -d "./tmp-src" ] ; then
+	echo "    ! no tmp-src!"
+fi
+
+echo "\nisolating $SOURCE_DIR and history"
+git filter-branch --subdirectory-filter $SOURCE_DIR -- --all
+sleep 2s
+
+echo "\nrenaming to $DESTINATION_DIR"
+mkdir -p $DESTINATION_DIR 
+mv ./* $DESTINATION_DIR 
+echo "commiting change"
+git add . --all
+git commit -m "isolated $SOURCE_DIR as $DESTINATION_DIR"
+sleep 2s
+
+echo "\ncloning $DESTINATION_REPO into tmp-destination"
+cd ..
+git clone $DESTINATION_REPO tmp-destination
+cd tmp-destination
+git checkout -b $DESTINATION_DIR
+git remote add tmp-source ../tmp-source
+sleep 2s
+
+echo "\nmerging new directory"
+git pull tmp-source master
+sleep 2s
+
+echo "\npushing to $DESTINATION_REPO"
+git pull origin $DESTINATION_DIR
+git pull origin master
+git push origin $DESTINATION_DIR
+sleep 2s
+
+echo "cleanup!"
+cd ..
+# rm -rf tmp-source tmp-destination
