@@ -18,6 +18,10 @@
 
 echo "Standing on the shoulders of giants..."
 
+if [ -d "/" ] ; then
+    echo "/ is a directory."
+fi
+
 printf "\n  Clone url of source repo? -> "
 read SOURCE_REPO
 if [ "$SOURCE_REPO" = "" ] ; then
@@ -43,36 +47,36 @@ if [ -d "./tmp-src" ] ; then
 	echo "!!!!!!tmp-srcexists!"
 fi
 
-echo "\nisolating $SOURCE_DIR and history"
-git filter-branch --subdirectory-filter $SOURCE_DIR -- --all
-sleep 2s
+# echo "\nisolating $SOURCE_DIR and history"
+# git filter-branch --subdirectory-filter $SOURCE_DIR -- --all
+# sleep 2s
 
-echo "\nrenaming to $DESTINATION_DIR"
-mkdir -p $DESTINATION_DIR 
-mv ./* $DESTINATION_DIR 
-echo "commiting change"
-git add . --all
-git commit -m "isolated $SOURCE_DIR as $DESTINATION_DIR"
-sleep 2s
+# echo "\nrenaming to $DESTINATION_DIR"
+# mkdir -p $DESTINATION_DIR 
+# mv ./* $DESTINATION_DIR 
+# echo "commiting change"
+# git add . --all
+# git commit -m "isolated $SOURCE_DIR as $DESTINATION_DIR"
+# sleep 2s
 
-echo "\ncloning $DESTINATION_REPO into tmp-destination"
-cd ..
-git clone $DESTINATION_REPO tmp-destination
-cd tmp-destination
-git checkout -b $DESTINATION_DIR
-git remote add tmp-source ../tmp-source
-sleep 2s
+# echo "\ncloning $DESTINATION_REPO into tmp-destination"
+# cd ..
+# git clone $DESTINATION_REPO tmp-destination
+# cd tmp-destination
+# git checkout -b $DESTINATION_DIR
+# git remote add tmp-source ../tmp-source
+# sleep 2s
 
-echo "\nmerging new directory"
-git pull tmp-source master
-sleep 2s
+# echo "\nmerging new directory"
+# git pull tmp-source master
+# sleep 2s
 
-echo "\npushing to $DESTINATION_REPO"
-git pull origin $DESTINATION_DIR
-git pull origin master
-git push origin $DESTINATION_DIR
-sleep 2s
+# echo "\npushing to $DESTINATION_REPO"
+# git pull origin $DESTINATION_DIR
+# git pull origin master
+# git push origin $DESTINATION_DIR
+# sleep 2s
 
-echo "cleanup!"
-cd ..
-# rm -rf tmp-source tmp-destination
+# echo "cleanup!"
+# cd ..
+# # rm -rf tmp-source tmp-destination
