@@ -1,5 +1,7 @@
 # dirTransfer
 
+Transfer a directory  from one  repo to another, preserving commit history. Automates the process laid out at http://gbayer.com/development/moving-files-from-one-git-repository-to-another-preserving-history/.
+
 # Setup
 
 1. Add `dirTransfer.sh` to a directory of your choice.
