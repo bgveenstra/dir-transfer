@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Setup:
-  #
+  # do a chmod 700 <this file name>
 
 # To run this file:
   # ./<this file name>
@@ -40,7 +40,7 @@ git remote rm origin
 sleep 2s
 
 if [ -d "./tmp-src" ] ; then
-	echo "    ! no tmp-src!"
+	echo "!!!!!!tmp-srcexists!"
 fi
 
 echo "\nisolating $SOURCE_DIR and history"
