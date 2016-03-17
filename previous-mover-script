@@ -1,0 +1,38 @@
+#!/bin/sh
+rm -rf tmp target
+echo "args were $1 $2 $3 $4"
+FROM_GITHUB="$1"
+echo "cloning $FROM_GITHUB into tmp"
+git clone $FROM_GITHUB tmp
+cd tmp
+git remote rm origin
+sleep 2s
+
+echo "isolating $DIRECTORY_TO_TAKE"
+DIRECTORY_TO_TAKE="$2"
+git filter-branch --subdirectory-filter $DIRECTORY_TO_TAKE -- --all
+sleep 2s
+
+TARGET_DIRECTORY_NAME="$3"
+echo "renaming to $TARGET_DIRECTORY_NAME"
+mkdir -p $TARGET_DIRECTORY_NAME 
+mv ./* $TARGET_DIRECTORY_NAME 
+sleep 2s
+
+echo "commiting change"
+git add . --all
+git commit -m "isolated $DIRECTORY_TO_TAKE as $TARGET_DIRECTORY_NAME"
+sleep 2s
+
+echo "cloning target repo"
+cd ..
+git clone $4 target
+cd target
+git checkout -b $TARGET_DIRECTORY_NAME
+git remote add tmp-source ../tmp
+sleep 2s
+
+git pull tmp-source master
+
+# echo "cleanup!"
+# rm -rf tmp
