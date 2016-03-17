@@ -16,13 +16,10 @@
   # Destination directory (relative path *inside* destination repo)? -> 
     # 01-front-end-basics/json-and-html-string/22-23
 
-echo "Standing on the shoulders of giants..."
+echo "Standing on the shoulders of ..."
 
 printf "\n  Clone url of source repo? -> "
 read SOURCE_REPO
-if [ "$SOURCE_REPO" = "" ] ; then
-	echo "   no source repo!"
-fi
 printf "  Source directory (relative path *inside* source repo)? -> "
 read SOURCE_DIR
 printf "  Clone url of destination repo? -> "
@@ -35,17 +32,25 @@ rm -rf tmp-source tmp-destination
 
 echo "\ncloning $SOURCE_REPO into tmp-source"
 git clone $SOURCE_REPO tmp-source
-cd tmp-source
-git remote rm origin
-sleep 2s
-
-if [ -d "./tmp-src" ] ; then
-	echo "    ! no tmp-src!"
+if [ ! -d "./tmp-source" ] ; then
+    exit 
 fi
 
-echo "\nisolating $SOURCE_DIR and history"
+echo "\ncloning $DESTINATION_REPO into tmp-destination"
+git clone $DESTINATION_REPO tmp-destination
+if [ ! -d "./tmp-destination" ] ; then
+    exit 
+fi
+
+echo "\nisolating $SOURCE_DIR, with history"
+cd tmp-source
+git remote rm origin
+if [ ! -d "./$SOURCE_DIR" ] ; then
+    echo "\nError: No directory $SOURCE_DIR."
+    exit 
+fi
 git filter-branch --subdirectory-filter $SOURCE_DIR -- --all
-sleep 2s
+
 
 echo "\nrenaming to $DESTINATION_DIR"
 mkdir -p $DESTINATION_DIR 
@@ -53,26 +58,26 @@ mv ./* $DESTINATION_DIR
 echo "commiting change"
 git add . --all
 git commit -m "isolated $SOURCE_DIR as $DESTINATION_DIR"
-sleep 2s
+# sleep 2s
 
-echo "\ncloning $DESTINATION_REPO into tmp-destination"
-cd ..
-git clone $DESTINATION_REPO tmp-destination
-cd tmp-destination
+echo "\npulling source data into destination repo"
+cd ../tmp-destination
 git checkout -b $DESTINATION_DIR
 git remote add tmp-source ../tmp-source
-sleep 2s
-
-echo "\nmerging new directory"
 git pull tmp-source master
-sleep 2s
+# sleep 2s
 
-echo "\npushing to $DESTINATION_REPO"
-git pull origin $DESTINATION_DIR
-git pull origin master
-git push origin $DESTINATION_DIR
-sleep 2s
-
-echo "cleanup!"
+echo "\nremoving temporary source repo"
 cd ..
-# rm -rf tmp-source tmp-destination
+rm -rf tmp-source
+
+echo "\nAll merged and ready to go!\nCheck files in tmp-destination, then push to your new $DESTINATION_DIR branch!"
+# echo "\npushing to $DESTINATION_REPO"
+# git pull origin $DESTINATION_DIR
+# git pull origin master
+# git push origin $DESTINATION_DIR
+# sleep 2s
+
+# echo "\nremoving temporary destination repo"
+# cd ..
+# # rm tmp-destination
